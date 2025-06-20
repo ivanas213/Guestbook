@@ -5,20 +5,28 @@ const tables = require("./enum/tables")
 const fields = require("./enum/fields")
 const db = require("./db");
 
-router.post('/add', async(req, res) =>{
-    try{
-        const {name, message} = req.body;
-        if(name == null || name.length == 0) return res.status(400).json({error : messages.ERR_NAME_EMPTY})
-        if(message == null || message.length == 0) return res.status(400).json({error : messages.ERR_MESSAGE_EMPTY})
-        const query = `Insert into ${tables.Messages} (${fields.name}, ${fields.message}) values (?, ?)`
-        console.log(query)
-        await db.execute(query, [name, message])
-        res.status(201).json({message: messages.SUCC_ADDING_MESSAGE})
+router.post('/add', async (req, res) => {
+    try {
+        const { name, message } = req.body;
+
+        if (!name || name.length === 0)
+            return res.status(400).json({ error: messages.ERR_NAME_EMPTY });
+        if (!message || message.length === 0)
+            return res.status(400).json({ error: messages.ERR_MESSAGE_EMPTY });
+
+        const createdAt = new Date()
+
+        const query = `INSERT INTO ${tables.Messages} (${fields.name}, ${fields.message}, ${fields.createdAt}) VALUES (?, ?, ?)`;
+        console.log(query);
+        await db.execute(query, [name, message, createdAt]);
+
+        res.status(201).json({ message: messages.SUCC_ADDING_MESSAGE });
     } catch (error) {
-        console.log(error)
-        res.status(500).send(messages.INTERNAL_SERVER_ERROR+error);
+        console.log(error);
+        res.status(500).send(messages.INTERNAL_SERVER_ERROR + error);
     }
-})
+});
+
 
 
 
