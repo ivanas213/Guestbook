@@ -3,45 +3,43 @@ import { useNavigate } from "react-router-dom"
 import {Errors} from '../constants/errors'
 import {Status} from '../constants/status'
 
+// Entering new message
 function NewMessage(){
-    const navigate = useNavigate()
-    const [name, setName] = useState("")
-    const [message, setMessage] = useState("")
-    const [status, setStatus] = useState("")
-    const [sending, setSending] = useState(false)
-    const [error, setError] = useState("")
-    const [loading, setLoading] = useState(false)
+
+    // State variables
+    const navigate = useNavigate() // Navigate between pages
+    const [name, setName] = useState("") // Name
+    const [message, setMessage] = useState("") // Message
+    const [status, setStatus] = useState("") // Status
+    const [sending, setSending] = useState(false) // Sending?
+    const [error, setError] = useState("") // Error
     const handleSubmit = (async (e)=>{
-        e.preventDefault()
-        // if(message === null || message.length === 0) {
-        //     setError(Errors.EMPTY_MESSAGE)
-        //     return
-        // }
-        // else if(name === null || name.length === 0) {
-        //     setError(Errors.EMPTY_NAME)
-        //     return 
-        // }
-        setError("")
-        setSending(true)
-        setStatus(Status.SENDING)
+
+        e.preventDefault() // Prevent page reload
+        setError("") // Clear old error
+        setSending(true) // Set sending to disable form inputs 
+        setStatus(Status.SENDING) // Set sending status
 
         try{
+            // Sending post request to backend
             const res = await fetch("http://localhost:3001/message/add", {
                 method: "POST",
                 body: JSON.stringify({message, name}),
                 headers:  { "Content-Type": "application/json" }
             })
             if(res.ok){
-                setStatus(Status.SUCCESSFUL)
-                setTimeout(() => navigate("/"), 1000)
+                setStatus(Status.SUCCESSFUL) // Successful
+                setTimeout(() => navigate("/"), 1000) // Redirect to home page after 1 second
             }
             else{
                 const err = await res.json()
-                setStatus(Status.FAILED+err.error)
+                setStatus(Status.FAILED) // Failed
+                setError((err?.error || Errors.NETWORK_ERROR)) // Setting error
             }
         }
         catch(err){
-            setStatus(Status.FAILED + (err?.error || Errors.NETWORK_ERROR))
+            setStatus(Status.FAILED) // Failed
+            setError((err?.error || Errors.NETWORK_ERROR)) // Setting error
         }
 
     })
@@ -53,7 +51,7 @@ function NewMessage(){
             <input value={name} disabled={sending} onChange={e=>setName(e.target.value)} ></input>
             <br/>
             <label>Message: </label>
-            <input value={message} disabled={sending} onChange={e=>setMessage(e.target.value)} ></input>
+            <textarea value={message} disabled={sending} onChange={e=>setMessage(e.target.value)} ></textarea>
             <br/>
             <button disabled = {sending} type="submit" > Submit </button>
         </form>
