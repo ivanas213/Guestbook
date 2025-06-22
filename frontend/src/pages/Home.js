@@ -1,4 +1,3 @@
-import { STEP_STATE } from "@angular/cdk/stepper"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 function Home(){
@@ -6,8 +5,8 @@ function Home(){
     const [page, setPage ] = useState(1)
     const [hasNext, setHasNext] = useState(false)
     useEffect(()=>{
-        fetch(`http://localhost:3001/message/?page=${page}&limit=10`).then((res)=>res.json()).then((data)=>{setMessages(data.messages);setHasNext(data.hasNext)}).catch((err)=> console.log("Error "+err), [page])
-    })
+        fetch(`http://localhost:3001/message/?page=${page}&limit=10`).then((res)=>res.json()).then((data)=>{setMessages(data.messages);setHasNext(data.hasNext)}).catch((err)=> console.log("Error "+err))
+    }, [page])
     return(<div>
         <h1>Guestbook</h1>
         <p>See all messages and feel free to write your message.</p>
