@@ -40,9 +40,11 @@ router.get("/", async (req,res) => {
             LIMIT ${limit} OFFSET ${offset}
         `;
         const [rows] = await db.execute(query);
-
-        res.json({
-            messages: rows
+        const [result] = await db.execute(`SELECT COUNT(*) AS count FROM messages`)
+        const hasNext = result[0].count > offset + limit
+        res.status(200).json({
+            messages: rows,
+            hasNext: hasNext
         });
     } catch (error) {
        res.status(500).send(messages.INTERNAL_SERVER_ERROR + error);
