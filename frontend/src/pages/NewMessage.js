@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import {Errors} from '../constants/errors'
+import {Status} from '../constants/status'
 
 function NewMessage(){
     const navigate = useNavigate()
@@ -7,10 +9,22 @@ function NewMessage(){
     const [message, setMessage] = useState("")
     const [status, setStatus] = useState("")
     const [sending, setSending] = useState(false)
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
     const handleSubmit = (async (e)=>{
         e.preventDefault()
-        setStatus("Sending...")
+        // if(message === null || message.length === 0) {
+        //     setError(Errors.EMPTY_MESSAGE)
+        //     return
+        // }
+        // else if(name === null || name.length === 0) {
+        //     setError(Errors.EMPTY_NAME)
+        //     return 
+        // }
+        setError("")
         setSending(true)
+        setStatus(Status.SENDING)
+
         try{
             const res = await fetch("http://localhost:3001/message/add", {
                 method: "POST",
@@ -18,16 +32,16 @@ function NewMessage(){
                 headers:  { "Content-Type": "application/json" }
             })
             if(res.ok){
-                setStatus("Succes!")
-                setTimeout(() => navigate("/"), 3000)
+                setStatus(Status.SUCCESSFUL)
+                setTimeout(() => navigate("/"), 1000)
             }
             else{
                 const err = await res.json()
-                setStatus("Failed: "+err.message)
+                setStatus(Status.FAILED+err.error)
             }
         }
         catch(err){
-            setStatus("Failed: "+err.message)
+            setStatus(Status.FAILED + (err?.error || Errors.NETWORK_ERROR))
         }
 
     })
@@ -44,6 +58,8 @@ function NewMessage(){
             <button disabled = {sending} type="submit" > Submit </button>
         </form>
         <p>{status}</p>
+        <p className="error">{error}</p>
+
     </div>)
 }
 export default NewMessage

@@ -17,7 +17,6 @@ router.post('/add', async (req, res) => {
         const createdAt = new Date()
 
         const query = `INSERT INTO ${tables.Messages} (${fields.name}, ${fields.message}, ${fields.createdAt}) VALUES (?, ?, ?)`;
-        console.log(query);
         await db.execute(query, [name, message, createdAt]);
 
         res.status(201).json({ message: messages.SUCC_ADDING_MESSAGE });

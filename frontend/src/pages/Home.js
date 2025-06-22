@@ -1,7 +1,6 @@
 import { STEP_STATE } from "@angular/cdk/stepper"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-
 function Home(){
     const [messages, setMessages] = useState([])
     const [page, setPage ] = useState(1)
