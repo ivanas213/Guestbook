@@ -27,6 +27,28 @@ router.post('/add', async (req, res) => {
     }
 });
 
+router.get("/", async (req,res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const query = `
+            SELECT name, message, created 
+            FROM messages 
+            ORDER BY created DESC 
+            LIMIT ${limit} OFFSET ${offset}
+        `;
+        const [rows] = await db.execute(query);
+
+        res.json({
+            messages: rows
+        });
+    } catch (error) {
+       res.status(500).send(messages.INTERNAL_SERVER_ERROR + error);
+    }
+})
+
 
 
 
